@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SALCI v3.2 - Full Pitcher + Hitter Analysis with Charts
+SALCI v3.3 - Full Pitcher + Hitter Analysis with Charts
 MLB Prediction Model with CONFIRMED LINEUPS + SHAREABLE GRAPHICS
 
 Run with:
@@ -1378,7 +1378,7 @@ def render_hitter_card(hitter: Dict, show_batting_order: bool = True):
 # ----------------------------
 def main():
     # Header
-    st.markdown("<h1 class='main-header'>⚾ SALCI v3.2</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-header'>⚾ SALCI v3.3</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-header'>Pitcher Strikeouts + Hitter Analysis + Shareable Charts</p>", 
                unsafe_allow_html=True)
     
