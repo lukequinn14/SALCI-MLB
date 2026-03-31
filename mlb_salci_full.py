@@ -35,6 +35,9 @@ st.set_page_config(
 # ----------------------------
 st.markdown("""
 <style>
+    .best-bets-text {
+    color: #1e3a5f !important;
+    }
     .main-header {
         font-size: 2.5rem;
         font-weight: bold;
@@ -1665,7 +1668,7 @@ def main():
     
     # Tab 3: Best Bets
     with tab3:
-        st.markdown("### 🎯 Today's Best Bets")
+        st.markdown('<h3 style="color: #1e3a5f !important; background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center; font-weight: bold;">🎯 Today\'s Best Bets</h3>', unsafe_allow_html=True)
         
         confirmed_hitters = [h for h in all_hitter_results if h.get("lineup_confirmed")]
         
@@ -1734,45 +1737,59 @@ def main():
         else:
             st.info("Check back closer to game time for play recommendations!")
     
-    # Tab 4: Charts & Share (NEW!)
-    with tab4:
-        st.markdown("### 📊 Shareable Charts & Insights")
-        st.markdown("*Screenshot these charts for Twitter/X posts! All include #SALCI branding.*")
+    # ----------------------------
+# Tab 4: Charts & Game Day Card
+# ----------------------------
+with tab4:
+    st.markdown("### 📊 Charts & Share")
+    
+    # Charts first
+    col1, col2 = st.columns(2)
+    with col1:
+        if all_pitcher_results:
+            st.plotly_chart(create_pitcher_comparison_chart(all_pitcher_results), use_container_width=True)
+    with col2:
+        st.plotly_chart(create_salci_breakdown_chart(), use_container_width=True)
+    
+    # Game Day Card - Perfect screenshot area
+    st.markdown("---")
+    st.markdown("### 📱 Game Day Card")
+    st.caption("Perfect for your morning tweet! Screenshot and share.")
+    
+    # White background card container
+    with st.container():
+        st.markdown("""
+        <div style="
+            background: white; 
+            border-radius: 16px; 
+            padding: 2rem; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        ">
+            <h2 style="color: #1e3a5f; margin-bottom: 1rem;">⚾ Today's Top SALCI Pitchers</h2>
+        """, unsafe_allow_html=True)
         
-        st.markdown("---")
+        if all_pitcher_results:
+            top3 = sorted(all_pitcher_results, key=lambda x: x["salci"], reverse=True)[:3]
+            for i, p in enumerate(top3, 1):
+                rating_label, emoji, _ = get_rating(p["salci"])
+                st.markdown(f"""
+                    <div style="margin: 1rem 0; padding: 1rem; background: linear-gradient(135deg, #f8fafc, #e2e8f0); border-radius: 12px;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: #1e3a5f;">{emoji} {p['pitcher']}</h3>
+                        <p style="margin: 0; font-size: 2rem; font-weight: bold; color: {get_salci_color(p['salci'])};">{p['salci']}</p>
+                        <p style="margin: 0.25rem 0; color: #64748b;">vs {p['opponent']} | Exp: {p['expected']} K</p>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown("<p>No data yet - refresh lineups!</p>", unsafe_allow_html=True)
         
-        # ===== GAME DAY CARD - Featured at top =====
-        st.markdown("#### 📱 Game Day Card")
-        st.markdown("*Perfect for your morning tweet! Screenshot and share.*")
-        
-        # Calculate stats for the card
-        top_pitcher = all_pitcher_results[0] if all_pitcher_results else None
-        confirmed_hitters_list = [h for h in all_hitter_results if h.get("lineup_confirmed")]
-        top_hitter = confirmed_hitters_list[0] if confirmed_hitters_list else (all_hitter_results[0] if all_hitter_results else None)
-        elite_count = len([p for p in all_pitcher_results if p["salci"] >= 75])
-        strong_count = len([p for p in all_pitcher_results if 60 <= p["salci"] < 75])
-        hot_hitters_count = len([h for h in all_hitter_results if h.get("score", 0) >= 70])
-        lineups_confirmed = confirmed_count > 0
-        
-        # Render the Game Day Card
-        create_game_day_card(
-            selected_date=selected_date,
-            num_games=len(games),
-            top_pitcher=top_pitcher,
-            top_hitter=top_hitter,
-            elite_count=elite_count,
-            strong_count=strong_count,
-            hot_hitters_count=hot_hitters_count,
-            lineups_confirmed=lineups_confirmed
-        )
-        
-        # Sample tweet for copy/paste
-        if top_pitcher:
-            st.markdown("---")
-            st.markdown("##### 📝 Sample Tweet (copy & paste!)")
-            p_hand = top_pitcher.get('pitcher_hand', 'R')
-            h_hand = top_hitter.get('bat_side', 'R') if top_hitter else 'R'
-            h_vs_hand = top_hitter.get('pitcher_hand', 'R') if top_hitter else 'R'
+        st.markdown("""
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.875rem;">
+                SALCI v3.2 • MLB Stats API • {selected_date.strftime('%b %d, %Y')}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
             
             tweet_text = f"""🚨 SALCI Game Day - {selected_date.strftime('%b %d')} 🚨
 
