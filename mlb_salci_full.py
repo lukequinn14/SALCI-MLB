@@ -24,7 +24,7 @@ from plotly.subplots import make_subplots
 # Page Configuration
 # ----------------------------
 st.set_page_config(
-    page_title="SALCI v3.2 - MLB Predictions",
+    page_title="SALCI v3.3 - MLB Predictions",
     page_icon="⚾",
     layout="wide",
     initial_sidebar_state="expanded"
